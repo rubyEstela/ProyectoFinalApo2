@@ -2,7 +2,7 @@ package model;
 
 import java.io.Serializable;
 
-import exception.UserNotExistException;
+import exception.UserNotRepeatedException;
 import exception.UserRepeatedException;
 
 @SuppressWarnings("serial")
@@ -50,7 +50,7 @@ public class ABBUser implements Serializable {
 	 * @return the user search 
 	 * @throws UserioNotExistException if a user is not found with the name entered by parameter
 	 */
-	public User search(User current, String name) throws UserNotExistException {
+	public User search(User current, String name) throws UserNotRepeatedException {
 		if(current.getName()==name) {
 			return current;
 		}else {
@@ -58,13 +58,13 @@ public class ABBUser implements Serializable {
 				if(current.getLeft()!=null) {
 					return search(current.getLeft(), name);
 				}else {
-					throw new UserNotExistException(name);
+					throw new UserNotRepeatedException(name);
 				}
 			}else {
 				if(current.getRight()!=null) {
 					return search(current.getRight(), name);
 				}else {
-					throw new UserNotExistException(name);
+					throw new UserNotRepeatedException(name);
 				}
 			}
 		}

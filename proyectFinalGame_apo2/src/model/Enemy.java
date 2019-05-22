@@ -15,7 +15,7 @@ public class Enemy implements Serializable{
 	
 	private String image;
 
-	private boolean isAlive;
+	private boolean alive;
 	
 	private Enemy next;
 	
@@ -33,7 +33,7 @@ public class Enemy implements Serializable{
 		this.posY = posY;
 		this.points = points;
 		this.image = image;
-		this.alive = alive;
+		this.alive= alive;
 		this.adress=adress;
 	}
 

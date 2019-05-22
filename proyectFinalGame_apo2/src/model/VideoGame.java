@@ -1,83 +1,135 @@
 package model;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class VideoGame implements Serializable {
+import exception.ArbolVacioException;
+import exception.PuntajeNoExiste;
 
-	private User user;
-	private Enemy enemys;
-	private ListEnemy listEnemys;
+
+@SuppressWarnings("serial")
+public class VideoGame implements Serializable{
+
+	public static final int LONG_WINDOW=360;
+	public static final int WHIDTH_WINDOW=621;
 	
+	private User usuario;
+	private ABBUser arbolUsuarios;
 	
-	public VideoGame() {
-		loadEnemys();
+	private EnemyBoss eB;
+	
+	private EnemyList  listaEnemigos;
+	
+	/**
+	 * Constructor de la clase Juego 
+	 */
+	public VideoGame() {		
+		loadEnemy();
+	    loadBoss();
 	}
 	
-	public void loadUser(String name) throws UsuarioRepetidoException {
+	/**
+	 * Metodo que carga los usuarios de un archivo serializado 
+	 * @param nombre != null
+	 * @throws UsuarioRepetidoException si al intentar agregar el usuario encuentra un usuario existente con el mismo nombre
+	 */
+	public void LoadUser(String name) throws UsuarioRepetidoException {
 		try {
-			ObjectInputStream loadUser=new ObjectInputStream(new FileInputStream("src/usuarios/arbol.dat"));
-			//arbolUsuarios=(ABBUsuario)cargarUsuarios.readObject();
-			loadUser.close();
+			ObjectInputStream cargarUsuarios=new ObjectInputStream(new FileInputStream("src/usuarios/arbol.dat"));
+			arbolUsuarios=(ABBUser)cargarUsuarios.readObject();
+			cargarUsuarios.close();
 		}catch(Exception e) {
-			//arbolUsuarios=new ABBUsuario();
+			arbolUsuarios=new ABBUser();
 		}finally {
-			//user=new User(name);
-			//arbolUsuarios.add(arbolUsuarios.getRaiz(), User);
+			usuario=new User(name);
+			arbolUsuarios.add(arbolUsuarios.getRoot(), usuario);
 		}
 	}
 	
+	/**
+	 * Metodo que serializa el arbol binario de buqueda de los usuarios
+	 */
 	public void saveUser() {
 		try {
-			ObjectOutputStream save=new ObjectOutputStream(new FileOutputStream("src/usuarios/arbol.dat"));
-			//save.writeObject(arbolUsuarios);
-			save.close();
+			ObjectOutputStream salvar=new ObjectOutputStream(new FileOutputStream("src/usuarios/arbol.dat"));
+			salvar.writeObject(arbolUsuarios);
+			salvar.close();
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Metodo que carga los enemigos desde un archivo serializado
+	 */
 	public void loadEnemy() {
 		try {
-			ObjectInputStream load=new ObjectInputStream(new FileInputStream("src/save/NormalEnemies.dat"));
-			listEnemys=(ListEnemy) load.readObject();
-			load.close();
+			ObjectInputStream cargar=new ObjectInputStream(new FileInputStream("src/save/NormalEnemies.dat"));
+			listaEnemigos=(EnemyList) cargar.readObject();
+			cargar.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public int buscarMayorPuntaje() throws ArbolVacioException {
+	/**
+	 * Metodo que lee un archivo de texto e instancia un nuevo EnemigoBoss con los
+	 * valores obtenidos del archivo de texto
+	 */
+	public void LoadBoss() {
+		try {
+			BufferedReader lector=new BufferedReader(new FileReader("src/save/Boss.txt"));
+			String linea=lector.readLine();
+			String[] str=linea.split(",");
+			eB=new EnemyBoss(Integer.parseInt(str[0]), Integer.parseInt(str[1]), Integer.parseInt(str[2]), str[3], Boolean.parseBoolean(str[4]), str[5].charAt(0) );
+			lector.close();
+		} catch (Exception e) {
+
+		}
+	}
+	
+	/**
+	 * Metodo que busca el mayor puntaje de todos los usuario
+	 * @return El mayor puntaje de entre todos los usuarios
+	 * @throws ArbolVacioException Si se intenta llamar este metodo cuando el arbol esta vacio
+	 */
+	public int SearchHigherScore() throws ArbolVacioException {
 		int mayor=0;
 		ArrayList<User> usuarios=arrayUser();
 		if(usuarios.size()==0) {
 			throw new ArbolVacioException();
 		}else {
-			for(int i=1;i<user.size();i++) {
-				User porInsertar=(User)user.get(i);
-				boolean finish=false;
-				for(int j=i;j>0 && !finish;j--) {
-					User actual=(User)user.get(j-1);
+			for(int i=1;i<usuarios.size();i++) {
+				User porInsertar=(User)usuarios.get(i);
+				boolean termino=false;
+				for(int j=i;j>0 && !termino;j--) {
+					User actual=(User)usuarios.get(j-1);
 					if(actual.compareTo(porInsertar)>0) {
-						user.set(j, actual);
-						user.set(j-1, porInsertar);
+						usuarios.set(j, actual);
+						usuarios.set(j-1, porInsertar);
 					}else {
-						finish=true;
+						termino=true;
 					}
 				}
 			}
-			mayor=user.get(0).getPuntos();
+			mayor=usuarios.get(0).getPoint();
 			return mayor;
 		}
 	}
 	
-	public ArrayList<User> ordenNombres(){
-		ArrayList<User> usuarios=arrayUser();
-		ComparadorNombre cN=new ComparadorNombre();
+	/**
+	 * Metodo que ordena un arreglo conforme a los nombres de los objetos en el 
+	 * @return ArrayList ordenado conforme a los nombres de los usuarios
+	 */
+	public ArrayList<User> ordenName(){
+		ArrayList<User> usuarios= arrayUser();
+		ComparatorName cN=new ComparatorName();
 		for(int i=1;i<usuarios.size();i++) {
 			for(int j=i;j>0 && cN.compare(usuarios.get(j-1), usuarios.get(j))>0;j--) {
 				User temp=usuarios.get(j);
@@ -92,8 +144,8 @@ public class VideoGame implements Serializable {
 	 * Metodo que ordena un arreglo conforme a los puntos de los objetos en el 
 	 * @return ArrayList ordenado conforme a los puntos de los usuarios
 	 */
-	public ArrayList<User> ordenPuntos() {
-		ArrayList<User> usuarios=arrayUsuarios();
+	public ArrayList<User> ordenPoint() {
+		ArrayList<User> usuarios=arrayUser();
 		for(int i=1;i<usuarios.size();i++) {
 			User porInsertar=(User)usuarios.get(i);
 			boolean termino=false;
@@ -150,17 +202,17 @@ public class VideoGame implements Serializable {
 	 * @return el toString() del usuario encontrado con el puntaje especificado
 	 * @throws PuntajeNoExiste si en el arreglo no hay ningun usuario con u puntaje igul el parametro especificad
 	 */
-	public String busquedaBinaria(int valor) throws PuntajeNoExiste{
+	public String searchBinary (int valor) throws PuntajeNoExiste{
 		boolean encontre=false;
 		int inicio=0;
 		int medio=0;
-		ArrayList<User> usuarios=ordenPuntos();
+		ArrayList<User> usuarios=ordenPoint();
 		int fin=usuarios.size()-1;
 		while(inicio<=fin && !encontre){
 				medio=(inicio+fin)/2;
-			if(usuarios.get(medio).getPuntos()==valor){
+			if(usuarios.get(medio).getPoint()==valor){
 				encontre=true;
-			}else if(usuarios.get(medio).getPuntos()<valor){
+			}else if(usuarios.get(medio).getPoint()<valor){
 				fin=medio-1;
 			}else{
 				inicio=medio+1;
@@ -177,8 +229,8 @@ public class VideoGame implements Serializable {
 	 * @return Arraylist de tipo usuario con el contenido del arbol binario de busqueda 
 	 */
 	public ArrayList<User> arrayUsuarios(){
-		ArrayList<User> nombres = new ArrayList<Usuario>();
-		toArray(getArbolUsuarios().getRaiz(), nombres);
+		ArrayList<User> nombres = new ArrayList<User>();
+		toArray(getArbolUser().getRaiz(), nombres);
 		return nombres;
 	}
 	
@@ -198,61 +250,63 @@ public class VideoGame implements Serializable {
 			}
 		}
 	}
+
 	/**
 	 * @return the usuario
 	 */
 	public User getUser() {
-		return user;
+		return usuario;
 	}
 
 	/**
 	 * @param usuario the usuario to set
 	 */
-	public void setUser(User usuario) {
-		this.user = usuario;
+	public void setUsuario(User usuario) {
+		this.usuario = usuario;
 	}
 
 	/**
 	 * @return the arbolUsuarios
 	 */
-	public ABBUsuarios getArbolUser() {
+	public ABBUser getArbolUser() {
 		return arbolUsuarios;
 	}
 
 	/**
 	 * @param arbolUsuarios the arbolUsuarios to set
 	 */
-	public void setArbolUser(ABBUsuario arbolUsuarios) {
-		this.arbolUser = arbolUsuarios;
+	public void setArbolUsuarios(ABBUser arbolUsuarios) {
+		this.arbolUsuarios = arbolUsuarios;
 	}
 
 	/**
 	 * @return the eB
 	 */
-	public EnemigoBoss geteB() {
+	public EnemyBoss geteB() {
 		return eB;
 	}
 
 	/**
 	 * @param eB the eB to set
 	 */
-	public void seteB(EnemigoBoss eB) {
+	public void seteB(EnemyBoss eB) {
 		this.eB = eB;
 	}
 
 	/**
 	 * @return the listaEnemigos
 	 */
-	public Enemy getEnemyList() {
-		return EnemyList;
+	public EnemyList  getListaEnemigos() {
+		return listaEnemigos;
 	}
 
 	/**
 	 * @param listaEnemigos the listaEnemigos to set
 	 */
-	public void setEnemyList( Enemy listaEnemigos) {
-		this.listEnemys  = listEnemys;
+	public void setListaEnemigos(EnemyList listaEnemigos) {
+		this.listaEnemigos = listaEnemigos;
 	}
+	
 	
 	
 	
