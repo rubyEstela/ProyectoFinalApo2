@@ -2,28 +2,40 @@ package model;
 
 import java.io.Serializable;
 
-import excepciones.UsuarioNoExisteException;
-import excepciones.UsuarioRepetidoException;
-
+import exception.UserNotExistException;
+import exception.UserRepeatedException;
 
 @SuppressWarnings("serial")
+
 public class ABBUser implements Serializable {
 	
 	private User root;
-	
 	public ABBUser() {
-		root=null;
+		root = null;
 	}
 	
 	/**
-	 * Metodo que agrega un nuevo usuario al arbol binario de busqueda si la raiz es null
-	 * en caso contrario llama al metodo recursivo de la clase Usuario insertar(Usuario)  
-	 * @param actual != null
-	 * @param nuevo != null, nuevo metodo a agregar
-	 * @throws UsuarioRepetidoException Si en el metodo insertar(Usuario) de la clase Usuario se encuentra
-	 * un usuario registrado con el mismo nombre que el de nuevo.getNombre()
+	 * @return the root
 	 */
-	public void add(User actual, User nuevo) throws UsuarioRepetidoException {
+	public User getRoot() {
+		return root;
+	}
+	
+	/**
+	 * @param root the root to set
+	 */
+	public void setRoot(User root) {
+		this.root = root;
+	}
+	
+	/**
+	 * This method adds a new user to the search binary tree if the root is null
+	 * otherwise it calls the recursive method insert of the user class 
+	 * @param current != null
+	 * @param nuevo != null, new user of the add
+	 * @throws UserRepeatedException if the user is already registered with the same name
+	 */
+	public void add(User current, User nuevo) throws UserRepeatedException {
 		if(root==null) {
 			root=nuevo;
 		}else {
@@ -32,51 +44,38 @@ public class ABBUser implements Serializable {
 	}
 
 	/**
-	 * Metodo recursivo que busca un usuario en el arbol binario de busqueda 
-	 * @param actual !=null, usuario actual del recorridodel arbol
-	 * @param nombre nombre del usuario que desea buscar
-	 * @return El usuario buscado
-	 * @throws UsuarioNoExisteException si no se encuentra ningun usuario con el nombre ingresado por parametro
+	 * the recursive method searches for a user in the binary search tree
+	 * @param current !=null, current user of the tree route 
+	 * @param name of he user to search 
+	 * @return the user search 
+	 * @throws UserioNotExistException if a user is not found with the name entered by parameter
 	 */
-	public User search (User actual, String name) throws UsuarioNoExisteException {
-		if(actual.getName()==name) {
-			return actual;
+	public User search(User current, String name) throws UserNotExistException {
+		if(current.getName()==name) {
+			return current;
 		}else {
-			if(name.compareToIgnoreCase(actual.getName())<1) {
-				if(actual.getLeft
-					return search(actual.getLeft(), name);
+			if(name.compareToIgnoreCase(current.getName())<1) {
+				if(current.getLeft()!=null) {
+					return search(current.getLeft(), name);
 				}else {
-					throw new UsuarioNoExisteException(name);
+					throw new UserNotExistException(name);
 				}
 			}else {
-				if(actual.getRight()!=null) {
-					return search(actual.getRight(), name);
+				if(current.getRight()!=null) {
+					return search(current.getRight(), name);
 				}else {
-					throw new UsuarioNoExisteException(nombre);
+					throw new UserNotExistException(name);
 				}
 			}
 		}
 	}
+	/**
+	 * this method call the method recursive remove
+	 * @param name != null
+	 */
 	
-	/**
-	 * @return the raiz
-	 */
-	public User getRoot() {
-		return root;
+	public void remove(String name) {
+		root=root.remove(name);
 	}
 
-	/**
-	 * @param raiz the raiz to set
-	 */
-	public void setRoot(User root) {
-		this.root = root;
-	}
-
-	/**
-	 * Metodo que llama al metodo recursivo eliminar(String) de la clase usuario
-	 * @param nombre != null
-	 */
-	public void eliminar(String nombre) {
-		root=root.eliminar(nombre);
-	}
 }
