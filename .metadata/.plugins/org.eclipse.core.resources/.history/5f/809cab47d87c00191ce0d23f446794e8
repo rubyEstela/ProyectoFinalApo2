@@ -54,7 +54,7 @@ public class VideoGame implements Serializable{
 	}
 	
 	/**
-	 * Method that serializes the binary tree of the users' ship
+	 * Metodo que serializa el arbol binario de buqueda de los usuarios
 	 */
 	public void saveUser() {
 		try {

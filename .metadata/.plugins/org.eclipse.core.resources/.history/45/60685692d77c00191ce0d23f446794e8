@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 import exception.ArbolVacioException;
 import exception.PuntajeNoExiste;
-import exception.UserRepeatedException;
 
 
 @SuppressWarnings("serial")
@@ -28,7 +27,7 @@ public class VideoGame implements Serializable{
 	private EnemyList  listaEnemigos;
 	
 	/**
-	 *buider of the class Game
+	 *Constructor of the class Game
 	 */
 	public VideoGame() {		
 		loadEnemy();
@@ -38,9 +37,9 @@ public class VideoGame implements Serializable{
 	/**
 	 * Method that loads the users of a serialized file
 	 * @param name != null
-	 * @throws UserRepeatedException If you try to add the user, find an existing user with the same name
+	 * @throws UsuarioRepetidoException si al intentar agregar el usuario encuentra un usuario existente con el mismo nombre
 	 */
-	public void LoadUser(String name) throws UserRepeatedException{
+	public void LoadUser(String name) throws UsuarioRepetidoException {
 		try {
 			ObjectInputStream cargarUsuarios=new ObjectInputStream(new FileInputStream("src/usuarios/arbol.dat"));
 			arbolUsuarios=(ABBUser)cargarUsuarios.readObject();
@@ -48,13 +47,13 @@ public class VideoGame implements Serializable{
 		}catch(Exception e) {
 			arbolUsuarios=new ABBUser();
 		}finally {
-			usuario= new User(name);
+			usuario=new User(name);
 			arbolUsuarios.add(arbolUsuarios.getRoot(), usuario);
 		}
 	}
 	
 	/**
-	 * Method that serializes the binary tree of the users' ship
+	 * Metodo que serializa el arbol binario de buqueda de los usuarios
 	 */
 	public void saveUser() {
 		try {

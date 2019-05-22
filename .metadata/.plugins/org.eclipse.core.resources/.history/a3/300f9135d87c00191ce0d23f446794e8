@@ -28,7 +28,7 @@ public class VideoGame implements Serializable{
 	private EnemyList  listaEnemigos;
 	
 	/**
-	 *buider of the class Game
+	 *Constructor of the class Game
 	 */
 	public VideoGame() {		
 		loadEnemy();
@@ -48,13 +48,13 @@ public class VideoGame implements Serializable{
 		}catch(Exception e) {
 			arbolUsuarios=new ABBUser();
 		}finally {
-			usuario= new User(name);
+			usuario=new User(name);
 			arbolUsuarios.add(arbolUsuarios.getRoot(), usuario);
 		}
 	}
 	
 	/**
-	 * Method that serializes the binary tree of the users' ship
+	 * Metodo que serializa el arbol binario de buqueda de los usuarios
 	 */
 	public void saveUser() {
 		try {
