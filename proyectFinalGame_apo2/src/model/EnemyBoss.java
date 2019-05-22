@@ -23,6 +23,7 @@ public class EnemyBoss extends EnemyA implements Serializable{
 		lives=2500;
 	}
 
+	dbfbdfbdbfdffnm
 	/**
 	 * @return the vida
 	 */

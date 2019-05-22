@@ -67,8 +67,7 @@ public class VideoGame implements Serializable{
 	}
 	
 	/**
-	 * Metodo que carga los enemigos desde un archivo serializado
-	 */
+    Method that loads enemies from a serialized file	 */
 	public void loadEnemy() {
 		try {
 			ObjectInputStream cargar=new ObjectInputStream(new FileInputStream("src/save/NormalEnemies.dat"));
@@ -80,8 +79,8 @@ public class VideoGame implements Serializable{
 	}
 	
 	/**
-	 * Metodo que lee un archivo de texto e instancia un nuevo EnemigoBoss con los
-	 * valores obtenidos del archivo de texto
+     *Method that reads a text file and instantiates a new EnemigoBoss with the
+	 * values ​​obtained from the text file
 	 */
 	public void LoadBoss() {
 		try {
@@ -96,8 +95,7 @@ public class VideoGame implements Serializable{
 	}
 	
 	/**
-	 * Metodo que busca el mayor puntaje de todos los usuario
-	 * @return El mayor puntaje de entre todos los usuarios
+     *Method that seeks the highest score of all users	 * @return El mayor puntaje de entre todos los usuarios
 	 * @throws ArbolVacioException Si se intenta llamar este metodo cuando el arbol esta vacio
 	 */
 	public int SearchHigherScore() throws ArbolVacioException {
