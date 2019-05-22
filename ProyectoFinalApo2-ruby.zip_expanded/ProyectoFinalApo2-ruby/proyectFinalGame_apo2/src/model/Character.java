@@ -8,6 +8,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Character implements Serializable, InterfaceReloadP, InterfaceShooting {
 	asjvnjfkvmlxcml
+	hjdsbjkmx
 
 	public static final String RIGHT="data/userR.png";
 	public static final String LEFT="data/userL.png";
